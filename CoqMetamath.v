@@ -879,8 +879,6 @@ Proof.
     conj (H0 H2) (H1 H2)
   ).
 Qed.
-
-(* http://us.metamath.org/ileuni/simplbi.html *)
 (* ⊢ (𝜑 ↔ (𝜓 ∧ 𝜒)) *)
 (* ---------------- *)
 (* ⊢ (𝜑 → 𝜓) *)
@@ -910,3 +908,75 @@ Proof.
     end
   ).
 Qed.
+
+(* http://us.metamath.org/ileuni/simprbi.html *)
+(* ⊢ (𝜑 ↔ (𝜓 ∧ 𝜒)) *)
+(* ---------------- *)
+(* ⊢ (𝜑 → 𝜒) *)
+Theorem simprbi:forall P Q R:Prop,((P <-> (Q /\ R)) -> (P -> R)).
+Proof.
+  intros P Q R.
+  intros H0 H1.
+  destruct H0.
+  destruct H.
+  exact H1.
+  exact H2.
+Qed.
+
+Print simprbi.
+
+Theorem simprbi_01:forall P Q R:Prop,((P <-> (Q /\ R)) -> (P -> R)).
+Proof.
+  exact (
+    fun (P Q R : Prop) (H0 : P <-> Q /\ R) (H1 : P) =>
+    match H0 with
+    | conj x x0 =>
+      (fun (H : P -> Q /\ R) (_ : Q /\ R -> P) =>
+         let a : Q /\ R := H H1 in
+         match a with
+         | conj x1 x2 => (fun (_ : Q) (H4 : R) => H4) x1 x2
+         end) x x0
+    end
+  ).
+Qed.
+
+(* http://us.metamath.org/ileuni/adantr.html *)
+(* ⊢ (𝜑 → 𝜓) *)
+(* ⊢ ((𝜑 ∧ 𝜒) → 𝜓) *)
+Theorem adantr:forall P Q R:Prop,((P -> R) -> ((P /\ Q) -> R)).
+Proof.
+  intros P Q R.
+  intros H0.
+  intros H1.
+  apply H0.
+  destruct H1.
+  exact H.
+Qed.
+
+Print adantr.
+
+Theorem adantr_02:forall P Q R:Prop,((P -> R) -> ((P /\ Q) -> R)).
+Proof.
+  exact (
+    fun (P Q R : Prop) (H0 : P -> R) (H1 : P /\ Q) => H0 
+      match H1 with
+      | conj x x0 => (fun (H : P) (_ : Q) => H) x x0
+      end
+  ).
+Qed.
+
+Section proof_of_tripl_impl.
+  Variables P Q S:Prop.
+  Hypothesis H : ((P -> Q) -> Q) -> Q.
+  Hypothesis p : P.
+
+  Lemma Rem : (P -> Q) -> Q.
+  Proof (fun H0:P -> Q => H0 p).
+
+  Definition  Rem_f := (fun H0:P -> Q => H0 p).
+  
+  Eval cbv in (Rem_f).
+  
+End proof_of_tripl_impl.
+  
+
