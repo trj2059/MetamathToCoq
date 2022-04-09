@@ -1152,6 +1152,145 @@ Proof.
   ).
 Qed.
 
+(* http://us.metamath.org/ileuni/mpan9.html *)
+(* ⊢ (P → R) *)
+(* ⊢ (Q → (R → S)) *)
+(* --------------- *)
+(* ⊢ ((P ∧ Q) → S) *)
+Theorem mpan9:forall P Q R S:Prop,((P -> R) /\ (Q -> (R -> S))) -> ((P /\ Q) -> S).
+Proof.
+  intros P Q R S.
+  intros H0.
+  intros H1.
+  destruct H0.
+  apply H0.
+  destruct H1.
+  exact H2.
+  apply H.
+  destruct H1.
+  trivial.
+Qed.
 
+Print mpan9.
 
+Theorem mpan9_01:forall P Q R S:Prop,((P -> R) /\ (Q -> (R -> S))) -> ((P /\ Q) -> S).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : (P -> R) /\ (Q -> R -> S)) (H1 : P /\ Q) =>
+      match H0 with
+      | conj x x0 =>
+        (fun (H : P -> R) (H2 : Q -> R -> S) =>
+          H2 match H1 with
+              | conj x1 x2 => (fun (_ : P) (H4 : Q) => H4) x1 x2
+              end
+            (H
+                match H1 with
+                | conj x1 x2 => (fun (H3 : P) (_ : Q) => H3) x1 x2
+                end)) x x0
+      end
+  ).
+Qed.
 
+(* http://us.metamath.org/ileuni/syldan.html *)
+(* ⊢ ((P ∧ Q) → R) *)
+(* ⊢ ((P ∧ R) → S) *)
+(* ---------------- *)
+(* ⊢ ((P ∧ Q) → S) *)
+Theorem syldan:forall P Q R S:Prop,(((P /\ Q) -> R) /\ ((P /\ R) -> S)) -> ((P /\ Q) -> S).
+Proof.
+  intros P Q R S.
+  intros H0.
+  intros H1.
+  destruct H0.
+  apply H0.
+  split.
+  destruct H1.
+  exact H1.
+  apply H.
+  trivial.
+Qed.
+
+Print syldan.
+
+Theorem syldan_02:forall P Q R S:Prop,(((P /\ Q) -> R) /\ ((P /\ R) -> S)) -> ((P /\ Q) -> S).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : (P /\ Q -> R) /\ (P /\ R -> S)) (H1 : P /\ Q) =>
+    match H0 with
+    | conj x x0 =>
+      (fun (H : P /\ Q -> R) (H2 : P /\ R -> S) =>
+         H2
+           (conj
+              match H1 with
+              | conj x1 x2 => (fun (H3 : P) (_ : Q) => H3) x1 x2
+              end (H H1))) x x0
+    end
+  ).
+Qed.
+
+(* http://us.metamath.org/ileuni/sylan.html *)
+(* ⊢ (P → Q) *)
+(* ⊢ ((Q ∧ R) → S) *)
+(* ---------------- *)
+(* ⊢ ((P ∧ R) → S) *)
+Theorem sylan:forall P Q R S:Prop,
+  ((P -> Q) /\ ((Q /\ R) -> S)) -> ((P /\ R) -> S).
+Proof.
+  intros P Q R S.
+  intros H0;intros H1.
+  destruct H0.
+  apply H0.
+  split.
+  apply H.
+  destruct H1.
+  exact H1.
+  destruct H1.
+  trivial.
+Qed.
+
+Print sylan.
+
+Theorem sylan_02:forall P Q R S:Prop,
+  ((P -> Q) /\ ((Q /\ R) -> S)) -> ((P /\ R) -> S).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : (P -> Q) /\ (Q /\ R -> S)) (H1 : P /\ R) =>
+    match H0 with
+    | conj x x0 =>
+      (fun (H : P -> Q) (H2 : Q /\ R -> S) =>
+         H2
+           (conj
+              (H
+                 match H1 with
+                 | conj x1 x2 => (fun (H3 : P) (_ : R) => H3) x1 x2
+                 end)
+              match H1 with
+              | conj x1 x2 => (fun (_ : P) (H4 : R) => H4) x1 x2
+              end)) x x0
+    end
+  ).
+Qed.
+
+(* http://us.metamath.org/ileuni/sylanb.html *)
+(* ⊢ (P ↔ Q) *)
+(* ⊢ ((Q ∧ R) → S) *)
+(* ---------------- *)
+(* ⊢ ((P ∧ R) → S) *)
+Theorem sylanb:
+  forall P Q R S:Prop,
+  ((P <-> Q) /\
+  ((Q /\ R) -> S)) 
+  -> ((P /\ R) -> S).
+Proof.
+  intros P Q R S.
+  intros H0; intros H1.
+  destruct H0.
+  apply H0.
+  split.
+  destruct H as (H2 & H3).
+  apply H2.
+  destruct H1 as (H4 & H5).
+  exact H4.
+  destruct H1 as (H4 & H5).
+  trivial.
+Qed.
