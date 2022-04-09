@@ -978,5 +978,180 @@ Section proof_of_tripl_impl.
   Eval cbv in (Rem_f).
   
 End proof_of_tripl_impl.
-  
+
+(* https://cs.stackexchange.com/questions/80590/is-possible-to-prove-undecidability-of-the-halting-problem-in-coq *)
+Record bijection A B :=
+  {  to   : A -> B
+  ; from : B -> A
+  ; to_from : forall b, to (from b) = b
+  ; from_to : forall a, from (to a) = a
+  }.
+
+Theorem cantor :
+  bijection nat (nat -> nat) ->
+  False.
+Proof.
+  destruct 1 as [seq index ? ?].
+  (* define a function which differs from the nth sequence at the nth index *)
+  pose (f := fun n => S (seq n n)).
+  (* prove f differs from every sequence *)
+  assert (forall n, f <> seq n). {
+    unfold not; intros.
+    assert (f n = seq n n) by congruence.
+    subst f; cbn in H0.
+    eapply n_Sn; eauto.
+  }
+  rewrite <- (to_from0 f) in H.
+  apply (H (index f)).
+  reflexivity.
+Qed.
+
+Print cantor.
+
+Theorem cator_02 : (bijection nat (nat -> nat)) -> False.
+Proof.
+exact (
+  fun H : bijection nat (nat -> nat) =>
+  match H with
+  | {| to := to; from := from; to_from := to_from; from_to := from_to |} =>
+    (fun (seq : nat -> nat -> nat) (index : (nat -> nat) -> nat)
+         (to_from0 : forall b : nat -> nat, seq (index b) = b)
+         (_ : forall a : nat, index (seq a) = a) =>
+       let f := fun n : nat => S (seq n n) in
+       let H0 : forall n : nat, f <> seq n :=
+         (fun (n : nat) (H0 : f = seq n) =>
+          let H1 : f n = seq n n :=
+            eq_trans (f_equal (fun f0 : nat -> nat => f0 n) H0)
+              (f_equal (seq n) eq_refl) in
+          n_Sn (seq n n) (eq_sym H1))
+          :
+          forall n : nat, f <> seq n in
+        let H1 : forall n : nat, seq (index f) <> seq n :=
+          eq_ind_r (fun f0 : nat -> nat => forall n : nat, f0 <> seq n) H0
+            (to_from0 f) in
+        H1 (index f) eq_refl) to from to_from from_to
+   end
+).
+Qed.
+
+(*http://us.metamath.org/ileuni/adantl.html*)
+(* ⊢ (𝜑 → 𝜓) *)
+(* -----------*)
+(* ⊢ ((𝜒 ∧ 𝜑) → 𝜓) *)
+Theorem adanl:forall P Q R:Prop, (Q -> R) -> ((P /\ Q) -> R).
+Proof.
+  intros P Q R.
+  intros H0.
+  intros H1.
+  apply H0.
+  destruct H1.
+  trivial.
+Qed.
+
+Print adanl.
+
+Theorem adanl_01:forall P Q R:Prop, (Q -> R) -> ((P /\ Q) -> R).
+Proof.
+  exact (
+    fun (P Q R : Prop) (H0 : Q -> R) (H1 : P /\ Q) =>
+    H0 match H1 with
+       | conj x x0 => (fun (_ : P) (H2 : Q) => H2) x x0
+       end
+  ).
+Qed.
+
+(* http://us.metamath.org/ileuni/adantld.html *)
+(* ⊢ (𝜑 → (𝜓 → 𝜒))  *)
+(* ----------------- *)
+(* ⊢ (𝜑 → ((𝜃 ∧ 𝜓) → 𝜒)) *)
+Theorem adantld:forall P Q R S:Prop,(P -> (R -> S)) -> (P -> ((Q /\ R) -> S)).
+Proof.
+  intros P Q R S.
+  intros H0.
+  intros H1.
+  intros H2.
+  apply H0.
+  exact H1.
+  destruct H2.
+  trivial.
+Qed.
+
+Print adantld.
+
+Theorem adantld_02:forall P Q R S:Prop,(P -> (R -> S)) -> (P -> ((Q /\ R) -> S)).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : P -> R -> S) (H1 : P) (H2 : Q /\ R) =>
+    H0 H1 match H2 with
+        | conj x x0 => (fun (_ : Q) (H3 : R) => H3) x x0
+          end
+  ).
+Qed.
+
+(* http://us.metamath.org/ileuni/adantrd.html *)
+(* ⊢ (𝜑 → (𝜓 → 𝜒)) *)
+(* ---------------- *)
+(* ⊢ (𝜑 → ((𝜓 ∧ 𝜃) → 𝜒)) *)
+Theorem adantrd:forall P Q R S:Prop,(P -> (Q -> S)) -> (P -> ((Q /\ R) -> S)).
+Proof.
+  intros P Q R S;intros H0;intros H1;intros H2.
+  apply H0.
+  exact H1.
+  destruct H2.
+  trivial.
+Qed.
+
+Print adantrd.
+
+Theorem adantrd_02:forall P Q R S:Prop,(P -> (Q -> S)) -> (P -> ((Q /\ R) -> S)).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : P -> Q -> S) (H1 : P) (H2 : Q /\ R) =>
+    H0 H1 match H2 with
+        | conj x x0 => (fun (H : Q) (_ : R) => H) x x0
+          end
+  ).
+Qed.
+
+(* http://us.metamath.org/ileuni/impel.html *)
+(* ⊢ (P → (Q → S)) *)
+(* ⊢ (R → Q) *)
+(* ------------------*)
+(* ⊢ ((P ∧ R) → S) *)
+Theorem impel:forall P Q R S:Prop,((P -> (Q -> S)) /\ (R -> Q)) -> ((P /\ R) -> S).
+Proof.
+  intros P Q R S.
+  intros H0.
+  intros H1.
+  destruct H0.
+  apply H.
+  destruct H1.
+  exact H1.
+  apply H0.
+  destruct H1.
+  trivial.
+Qed.
+
+Print impel.
+
+Theorem impel2:forall P Q R S:Prop,((P -> (Q -> S)) /\ (R -> Q)) -> ((P /\ R) -> S).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : (P -> Q -> S) /\ (R -> Q)) (H1 : P /\ R) =>
+    match H0 with
+    | conj x x0 =>
+      (fun (H : P -> Q -> S) (H2 : R -> Q) =>
+         H match H1 with
+           | conj x1 x2 => (fun (H3 : P) (_ : R) => H3) x1 x2
+           end
+           (H2
+              match H1 with
+              | conj x1 x2 => (fun (_ : P) (H4 : R) => H4) x1 x2
+              end)) x x0
+    end
+  ).
+Qed.
+
+
+
 
