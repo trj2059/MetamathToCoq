@@ -1294,3 +1294,206 @@ Proof.
   destruct H1 as (H4 & H5).
   trivial.
 Qed.
+
+(* http://us.metamath.org/ileuni/sylanbr.html *)
+(* ⊢ (P ↔ Q) *)
+(* ⊢ ((P ∧ R) → S) *)
+(* ---------------- *)
+(* ⊢ ((Q ∧ R) → S) *)
+Theorem sylanbr:forall P Q R S:Prop,
+  ((P <-> Q) /\ 
+   ((P /\ Q) -> S)) -> 
+  ((Q /\ R) -> S).
+Proof.
+  intros P Q R S.
+  intros H0 H1.
+  destruct H0 as (H2 & H3).
+  apply H3.
+  split.
+  destruct H2 as (H4 & H5).
+  apply H5.
+  destruct H1 as (H6 & H7).
+  trivial.
+  destruct H1 as (H6 & H7).
+  trivial.
+Qed.
+
+Print sylanbr.
+
+Theorem sylanbr_02:forall P Q R S:Prop,
+  ((P <-> Q) /\ 
+   ((P /\ Q) -> S)) -> 
+  ((Q /\ R) -> S).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : (P <-> Q) /\ (P /\ Q -> S)) (H1 : Q /\ R) =>
+    match H0 with
+    | conj x x0 =>
+      (fun (H2 : P <-> Q) (H3 : P /\ Q -> S) =>
+         H3
+           (conj
+              match H2 with
+              | conj x1 x2 =>
+                  (fun (_ : P -> Q) (H5 : Q -> P) =>
+                   H5
+                     match H1 with
+                     | conj x3 x4 => (fun (H6 : Q) (_ : R) => H6) x3 x4
+                     end) x1 x2
+              end
+              match H1 with
+              | conj x1 x2 => (fun (H6 : Q) (_ : R) => H6) x1 x2
+              end)) x x0
+    end
+  ).
+Qed.
+
+(* http://us.metamath.org/ileuni/sylan2.html *)
+(* ⊢ (P → Q) *)
+(* ⊢ ((R ∧ Q) → S) *)
+(* ---------------- *)
+(* ⊢ ((R ∧ P) → S) *)
+Theorem sylan2:forall P Q R S:Prop,
+    ((P -> Q) /\ 
+     ((R /\ Q) -> S)) ->
+    ((R /\ P) -> S).
+Proof.
+  intros P Q R S.
+  intros H0 H1.
+  destruct H0 as (H2 & H3).
+  apply H3.
+  split.
+  destruct H1 as (H4 & H5).
+  trivial.
+  apply H2.
+  destruct H1 as (H4 & H5).
+  exact H5.
+Qed.
+
+Print sylan2.
+
+Theorem sylan2_02:forall P Q R S:Prop,
+    ((P -> Q) /\ 
+     ((R /\ Q) -> S)) ->
+    ((R /\ P) -> S).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : (P -> Q) /\ (R /\ Q -> S)) (H1 : R /\ P) =>
+    match H0 with
+    | conj x x0 =>
+      (fun (H2 : P -> Q) (H3 : R /\ Q -> S) =>
+         H3
+           (conj
+              match H1 with
+              | conj x1 x2 => (fun (H4 : R) (_ : P) => H4) x1 x2
+              end
+              (H2
+                 match H1 with
+                 | conj x1 x2 => (fun (_ : R) (H5 : P) => H5) x1 x2
+                 end))) x x0
+    end
+  ).
+Qed.
+
+(* http://us.metamath.org/ileuni/sylan2b.html *)
+(* ⊢ (P ↔ Q) *)
+(* ⊢ ((R ∧ Q) → S) *)
+(* ---------------- *)
+(* ⊢ ((R ∧ P) → S) *)
+Theorem sylan2b:forall P Q R S:Prop,
+   ((P <-> Q) /\ 
+    ((R /\ Q) -> S)) -> 
+   ((R /\ P) -> S).
+Proof.
+  intros P Q R S.
+  intros H0 H1.
+  destruct H0 as (H2 & H3).
+  apply H3.
+  destruct H2 as (H4 & H5).
+  split.
+  destruct H1 as (H6 & H7).
+  exact H6.
+  apply H4.
+  destruct H1 as (H6 & H7).
+  exact H7.
+Qed.
+
+Print sylan2b.
+
+Theorem sylan2b_02:forall P Q R S:Prop,
+   ((P <-> Q) /\ 
+    ((R /\ Q) -> S)) -> 
+   ((R /\ P) -> S).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : (P <-> Q) /\ (R /\ Q -> S)) (H1 : R /\ P) =>
+    match H0 with
+    | conj x x0 =>
+      (fun (H2 : P <-> Q) (H3 : R /\ Q -> S) =>
+         H3
+           match H2 with
+           | conj x1 x2 =>
+               (fun (H4 : P -> Q) (_ : Q -> P) =>
+                conj
+                  match H1 with
+                  | conj x3 x4 => (fun (H6 : R) (_ : P) => H6) x3 x4
+                  end
+                  (H4
+                     match H1 with
+                     | conj x3 x4 => (fun (_ : R) (H7 : P) => H7) x3 x4
+                     end)) x1 x2
+           end) x x0
+    end
+  ).
+Qed.
+
+(* http://us.metamath.org/ileuni/sylan2br.html *)
+(* ⊢ (P ↔ Q) *)
+(* ⊢ ((R ∧ P) → S) *)
+(* ---------------- *)
+(* ⊢ ((R ∧ Q) → S) *)
+Theorem sylan2br:forall P Q R S:Prop,
+   ((P <-> Q) /\ 
+    ((R /\ P) -> S)) -> 
+   ((R /\ Q) -> S).
+Proof.
+  intros P Q R S.  
+  intros H0 H1.
+  destruct H0 as (H2 & H3).
+  apply H3.
+  split.
+  destruct H1 as (H4 & H5).
+  exact H4.
+  destruct H2 as (H6 & H7).
+  apply H7.
+  destruct H1 as (H4 & H5).
+  trivial.
+Qed.
+
+Print sylan2br.
+
+Theorem sylan2br_01:forall P Q R S:Prop,
+   ((P <-> Q) /\ 
+    ((R /\ P) -> S)) -> 
+   ((R /\ Q) -> S).
+Proof.
+  exact (
+    fun (P Q R S : Prop) (H0 : (P <-> Q) /\ (R /\ P -> S)) (H1 : R /\ Q) =>
+    match H0 with
+    | conj x x0 =>
+      (fun (H2 : P <-> Q) (H3 : R /\ P -> S) =>
+         H3
+           (conj
+              match H1 with
+              | conj x1 x2 => (fun (H4 : R) (_ : Q) => H4) x1 x2
+              end
+              match H2 with
+              | conj x1 x2 =>
+                  (fun (_ : P -> Q) (H7 : Q -> P) =>
+                   H7
+                     match H1 with
+                     | conj x3 x4 => (fun (_ : R) (H5 : Q) => H5) x3 x4
+                     end) x1 x2
+              end)) x x0
+    end
+  ).
+Qed.
