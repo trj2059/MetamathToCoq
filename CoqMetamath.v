@@ -1498,6 +1498,8 @@ Proof.
   ).
 Qed.
 
+(* detour with https://softwarefoundations.cis.upenn.edu/*)
+
 Inductive day : Type :=
   | monday
   | tuesday
@@ -1517,3 +1519,5 @@ Definition next_weekday (d:day) : day :=
   | saturday => monday
   | sunday => monday
   end.
+
+  
