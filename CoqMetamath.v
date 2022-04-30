@@ -1498,6 +1498,20 @@ Proof.
   ).
 Qed.
 
+Print prod.
+(*
+Inductive prod (A B : Type) : Type :=  
+   pair : A -> B -> A * B.
+*)
+
+Definition add1 : nat -> nat.
+intro n.
+Show Proof.
+apply S.
+Show Proof.
+apply n. Defined.
+Print add1.
+
 (* detour with https://softwarefoundations.cis.upenn.edu/*)
 
 Inductive day : Type :=
@@ -1519,5 +1533,33 @@ Definition next_weekday (d:day) : day :=
   | saturday => monday
   | sunday => monday
   end.
+
+Theorem plus_0_n : forall n : nat,0 + n = n.
+Proof.
+  intros n.
+  simpl.
+  reflexivity.
+Qed.
+
+Print plus_0_n.
+
+Theorem plus_0_n_02 : forall n : nat,0 + n = n.
+Proof.
+  exact (
+    fun n : nat => eq_refl : 0 + n = n
+  ).
+Qed.
+
+Theorem plus_O_n' : forall n : nat, 0 + n = n.
+Proof.
+  intros n. reflexivity. Qed.
+
+Theorem plus_1_l : forall n:nat, 1 + n = S n.
+Proof.
+    intros n. simpl. reflexivity. Qed.
+
+Theorem mult_0_l : forall n:nat, 0 * n = 0.
+  Proof.
+    intros n. simpl. reflexivity. Qed.
 
   
