@@ -1498,6 +1498,38 @@ Proof.
   ).
 Qed.
 
+Print prod.
+(*
+Inductive prod (A B : Type) : Type :=  
+   pair : A -> B -> A * B.
+*)
+
+Definition add1 : nat -> nat.
+intro n.
+Show Proof.
+apply S.
+Show Proof.
+apply n. Defined.
+Print add1.
+
+From ReductionEffect Require Import PrintingEffect.
+Eval cbv in (fun f x => f (f (f x))) (fun x => S (print_id x)) 0.
+Eval cbn in (fun f x => f (f (f x))) print_id 0. (* Not so interesting *)
+Eval hnf in (fun f x => f (f (f x))) print_id 0. (* Not so interesting *)
+Eval simpl in (fun f x => f (f (f x))) (fun x => print_id (1+x) + 1) 0.
+Eval cbv in let x := print 3 in let y := print 4 in tt.
+
+Module NatPlayground2.
+Fixpoint plus (n : nat) (m : nat) : nat :=
+  match n with
+  | O => m
+  | S n' => S (plus n' m)
+  end.
+
+  Eval cbv in (fun f x => (plus 3 2)) (fun x => S (print_id x)) 0.
+
+  End NatPlayground2.
+
 (* detour with https://softwarefoundations.cis.upenn.edu/*)
 
 Inductive day : Type :=
@@ -1520,102 +1552,99 @@ Definition next_weekday (d:day) : day :=
   | sunday => monday
   end.
 
-Compute (next_weekday friday).
-
-Compute (next_weekday (next_weekday saturday)).
-
-Example test_next_weekday:
-  (next_weekday (next_weekday saturday)) =
-  tuesday.
+Theorem plus_0_n : forall n : nat,0 + n = n.
 Proof.
-  simpl. 
+  intros n.
+  simpl.
+  reflexivity.
+Qed.
+
+Print plus_0_n.
+
+Theorem plus_0_n_02 : forall n : nat,0 + n = n.
+Proof.
+  exact (
+    fun n : nat => eq_refl : 0 + n = n
+  ).
+Qed.
+
+Theorem plus_O_n' : forall n : nat, 0 + n = n.
+Proof.
+  intros n. reflexivity. Qed.
+
+Theorem plus_1_l : forall n:nat, 1 + n = S n.
+Proof.
+    intros n. simpl. reflexivity. Qed.
+
+Theorem mult_0_l : forall n:nat, 0 * n = 0.
+  Proof.
+    intros n. simpl. reflexivity. Qed.
+
+Theorem plus_2_2_is_4 : 2 + 2 = 4.
+Proof. 
   reflexivity. 
 Qed.
 
-Inductive bool : Type :=
-  | true
-  | false.
+Definition plus_claim : Prop := 2 + 2 = 4.
+Check plus_claim : Prop.
 
-Definition negb (b:bool) : bool :=
-  match b with
-  | true => false 
-  | false => true 
-  end.
+Theorem plus_claim_is_true : plus_claim.
+Proof. reflexivity. Qed.
 
-Definition andb (b_1:bool) (b_2:bool) : bool :=
-  match b_1 with
-  | true => b_2 
-  | false => false
-  end.
+Definition is_three (n : nat) : Prop :=
+  n = 3.
+Check is_three : nat -> Prop.   
 
-Definition orb (b_1:bool) (b_2:bool) : bool :=
-  match b_1 with 
-  | true => true 
-  | false => b_2 
-  end.
+Check @eq : forall A : Type, A -> A -> Prop.
 
-Example test_orb1: (orb true false) = true.
+Definition injective {A B} (f : A -> B) :=
+  forall x y : A, f x = f y -> x = y.
+Lemma succ_inj : injective S.
 Proof.
-  simpl.
-  reflexivity.
+  intros n m H. 
+  injection H as H1. 
+  apply H1.
 Qed.
 
-Example test_orb2: (orb false false) = false.
+Example and_example : 3 + 4 = 7 /\ 2 * 2 = 4.
 Proof.
-  simpl.
-  reflexivity.
+  split.
+  Show Proof.
+  - reflexivity.
+  Show Proof.
+  - reflexivity.
+  Show Proof.
 Qed.
 
-Example test_orb3: (orb false true) = true.
+Print and_example.
+Print conj. 
+
+Lemma and_intro : forall A B : Prop, A -> B -> A /\ B.
 Proof.
-  simpl.
-  reflexivity.
+  intros A B HA HB. split.
+  - apply HA.
+  - apply HB.
 Qed.
 
-Example test_orb4: (orb true true) = true.
+Print and_intro.
+
+Example and_example' : 3 + 4 = 7 /\ 2 * 2 = 4.
 Proof.
-  simpl.
-  reflexivity.
+  apply and_intro.
+  - (* 3 + 4 = 7 *) reflexivity.
+  - (* 2 + 2 = 4 *) reflexivity.
 Qed.
 
-Notation "x && y" := (andb x y).
-Notation "x || y" := (orb x y).
-
-Example test_orb5: false || false || true = true.
+Example and_exercise :
+  forall n m : nat, n + m = 0 -> n = 0 /\ m = 0.
 Proof.
-  simpl. 
-  reflexivity.
-Qed.
+  intros m n.
+  induction m.
+  split.
+  - reflexivity.
+  - apply H.
+  - intros H0.
+  Admitted.
+  
 
-Definition negb' (b:bool) : bool :=
-  if b then false 
-  else true.
-
-Definition andb' (b1:bool) (b2:bool) : bool :=
-  if b1 then 
-    b2 
-  else 
-    false.
-
-Example andb'_test1: (andb' true false) = false.
-Proof.
-  simpl.
-  reflexivity.
-Qed.
-
-
-Definition orb' (b1:bool) (b2:bool) : bool :=
-  if b1 then  
-   (
-     true 
-   )
-  else 
-   (
-      b2
-   ).
-
-(* see below for a reference on the Coq core language *)
-(* https://coq.inria.fr/refman/language/core/basic.html *)
-
-
-
+ 
