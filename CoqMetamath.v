@@ -1520,4 +1520,102 @@ Definition next_weekday (d:day) : day :=
   | sunday => monday
   end.
 
-  
+Compute (next_weekday friday).
+
+Compute (next_weekday (next_weekday saturday)).
+
+Example test_next_weekday:
+  (next_weekday (next_weekday saturday)) =
+  tuesday.
+Proof.
+  simpl. 
+  reflexivity. 
+Qed.
+
+Inductive bool : Type :=
+  | true
+  | false.
+
+Definition negb (b:bool) : bool :=
+  match b with
+  | true => false 
+  | false => true 
+  end.
+
+Definition andb (b_1:bool) (b_2:bool) : bool :=
+  match b_1 with
+  | true => b_2 
+  | false => false
+  end.
+
+Definition orb (b_1:bool) (b_2:bool) : bool :=
+  match b_1 with 
+  | true => true 
+  | false => b_2 
+  end.
+
+Example test_orb1: (orb true false) = true.
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+Example test_orb2: (orb false false) = false.
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+Example test_orb3: (orb false true) = true.
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+Example test_orb4: (orb true true) = true.
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+Notation "x && y" := (andb x y).
+Notation "x || y" := (orb x y).
+
+Example test_orb5: false || false || true = true.
+Proof.
+  simpl. 
+  reflexivity.
+Qed.
+
+Definition negb' (b:bool) : bool :=
+  if b then false 
+  else true.
+
+Definition andb' (b1:bool) (b2:bool) : bool :=
+  if b1 then 
+    b2 
+  else 
+    false.
+
+Example andb'_test1: (andb' true false) = false.
+Proof.
+  simpl.
+  reflexivity.
+Qed.
+
+
+Definition orb' (b1:bool) (b2:bool) : bool :=
+  if b1 then  
+   (
+     true 
+   )
+  else 
+   (
+      b2
+   ).
+
+(* see below for a reference on the Coq core language *)
+(* https://coq.inria.fr/refman/language/core/basic.html *)
+
+
+
