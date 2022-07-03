@@ -1644,7 +1644,40 @@ Proof.
   - reflexivity.
   - apply H.
   - intros H0.
-  Admitted.
+Abort.
   
+  
+Theorem add_0_r_firsttry : forall n:nat, n + 0 = n.  
+Proof.
+  intros n.
+  simpl.
+Abort.
+
+Theorem add_0_r_secondtry : forall n:nat,n + 0 = n.
+Proof.
+  intros n.
+  Show Proof.
+  destruct n as [| n'] eqn:E.
+  Show Proof.
+  - reflexivity.
+  Show Proof.
+  - simpl.
+  Show Proof.
+Abort.
+
+Theorem add_0_r : forall n:nat, n + 0 = n.
+Proof.
+  intros n.
+  induction n as [| n' IHn'].
+  - (* n = 0 *) reflexivity.
+  - {
+    simpl.
+    rewrite -> IHn'.
+    reflexivity.
+  }
+Qed.
+
+Print add_0_r.
+
 
  
