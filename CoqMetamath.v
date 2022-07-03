@@ -1512,6 +1512,24 @@ Show Proof.
 apply n. Defined.
 Print add1.
 
+From ReductionEffect Require Import PrintingEffect.
+Eval cbv in (fun f x => f (f (f x))) (fun x => S (print_id x)) 0.
+Eval cbn in (fun f x => f (f (f x))) print_id 0. (* Not so interesting *)
+Eval hnf in (fun f x => f (f (f x))) print_id 0. (* Not so interesting *)
+Eval simpl in (fun f x => f (f (f x))) (fun x => print_id (1+x) + 1) 0.
+Eval cbv in let x := print 3 in let y := print 4 in tt.
+
+Module NatPlayground2.
+Fixpoint plus (n : nat) (m : nat) : nat :=
+  match n with
+  | O => m
+  | S n' => S (plus n' m)
+  end.
+
+  Eval cbv in (fun f x => (plus 3 2)) (fun x => S (print_id x)) 0.
+
+  End NatPlayground2.
+
 (* detour with https://softwarefoundations.cis.upenn.edu/*)
 
 Inductive day : Type :=
@@ -1562,4 +1580,71 @@ Theorem mult_0_l : forall n:nat, 0 * n = 0.
   Proof.
     intros n. simpl. reflexivity. Qed.
 
+Theorem plus_2_2_is_4 : 2 + 2 = 4.
+Proof. 
+  reflexivity. 
+Qed.
+
+Definition plus_claim : Prop := 2 + 2 = 4.
+Check plus_claim : Prop.
+
+Theorem plus_claim_is_true : plus_claim.
+Proof. reflexivity. Qed.
+
+Definition is_three (n : nat) : Prop :=
+  n = 3.
+Check is_three : nat -> Prop.   
+
+Check @eq : forall A : Type, A -> A -> Prop.
+
+Definition injective {A B} (f : A -> B) :=
+  forall x y : A, f x = f y -> x = y.
+Lemma succ_inj : injective S.
+Proof.
+  intros n m H. 
+  injection H as H1. 
+  apply H1.
+Qed.
+
+Example and_example : 3 + 4 = 7 /\ 2 * 2 = 4.
+Proof.
+  split.
+  Show Proof.
+  - reflexivity.
+  Show Proof.
+  - reflexivity.
+  Show Proof.
+Qed.
+
+Print and_example.
+Print conj. 
+
+Lemma and_intro : forall A B : Prop, A -> B -> A /\ B.
+Proof.
+  intros A B HA HB. split.
+  - apply HA.
+  - apply HB.
+Qed.
+
+Print and_intro.
+
+Example and_example' : 3 + 4 = 7 /\ 2 * 2 = 4.
+Proof.
+  apply and_intro.
+  - (* 3 + 4 = 7 *) reflexivity.
+  - (* 2 + 2 = 4 *) reflexivity.
+Qed.
+
+Example and_exercise :
+  forall n m : nat, n + m = 0 -> n = 0 /\ m = 0.
+Proof.
+  intros m n.
+  induction m.
+  split.
+  - reflexivity.
+  - apply H.
+  - intros H0.
+  Admitted.
   
+
+ 
