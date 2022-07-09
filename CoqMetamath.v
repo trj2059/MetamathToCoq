@@ -1687,5 +1687,27 @@ Qed.
 Print eq_ind_r.
 Print add_0_r.
 Print nat_ind.
+Check (fun n : nat =>
+nat_ind (fun n0 : nat => n0 + 0 = n0) (eq_refl : 0 + 0 = 0)
+  (fun (n' : nat) (IHn' : n' + 0 = n') =>
+   eq_ind_r (fun n0 : nat => S n0 = S n') eq_refl IHn' : S n' + 0 = S n') n).
+Check eq_ind_r.
+   Check fun n' => S (n' + 0) = S n'.
+Check fun (n : nat) (n' : nat) (IHn' : n' + 0 = n) => eq_refl IHn'.
 
- 
+Section eq_ind_r_proof.  
+   Hypothesis n' : nat. 
+   Hypothesis n : nat.   
+   Hypothesis IHn' : n' + 0 = n'. 
+   Print eq_ind_r.
+   Check (fun n0: nat => S n0 = S n'). 
+   Check eq_ind_r.
+   Check (fun x:nat => x = x).
+   Check eq_ind_r (fun x:nat => x = x).
+   Check eq_ind_r (fun n0: nat => S n0 = S n').
+   Check eq_ind_r (fun n0: nat => S n0 = S n') eq_refl.
+   Check eq_ind_r (fun n0: nat => S n0 = S n') eq_refl IHn'.
+   Definition f := eq_ind_r (fun n0: nat => S n0 = S n') eq_refl IHn'.
+   Print f.
+End eq_ind_r_proof.
+
