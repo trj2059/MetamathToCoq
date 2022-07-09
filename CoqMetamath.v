@@ -1669,15 +1669,23 @@ Theorem add_0_r : forall n:nat, n + 0 = n.
 Proof.
   intros n.
   induction n as [| n' IHn'].
-  - (* n = 0 *) reflexivity.
-  - {
-    simpl.
-    rewrite -> IHn'.
+  - (* n = 0 *)
+  { 
+    simpl. 
     reflexivity.
   }
+  - { (* n = S n' *)
+    Show Proof.
+    simpl.
+    Show Proof.
+    rewrite -> IHn'.
+    Show Proof.
+    reflexivity.
+    Show Proof.
+  }
 Qed.
-
+Print eq_ind_r.
 Print add_0_r.
-
+Print nat_ind.
 
  
