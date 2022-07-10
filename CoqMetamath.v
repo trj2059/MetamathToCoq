@@ -1711,3 +1711,43 @@ Section eq_ind_r_proof.
    Print f.
 End eq_ind_r_proof.
 
+Theorem minus_n_n : forall n,
+  minus n n = 0.
+Proof.
+  (* WORKED IN CLASS *)
+  intros n. 
+  induction n as [| n' IHn'].
+  - (* n = 0 *)
+    simpl. reflexivity.
+  - (* n = S n' *)
+    simpl. rewrite -> IHn'. reflexivity. 
+  Qed.
+
+Theorem mul_0_r : forall n:nat,
+  n * 0 = 0.
+Proof.
+  intros n.
+  induction n as [| n' IHn'].
+  - (* n = 0 *)  
+    simpl. 
+    reflexivity.
+  - (* n = S n' *)
+    simpl. 
+    rewrite -> IHn'.
+    reflexivity.
+Qed.
+
+Theorem plus_n_Sm : forall n m : nat,
+  S (n + m) = n + (S m).
+Proof.
+  intros n m.
+  induction n as [| n' IHn'].
+  - (* n = 0 *)
+    simpl.
+    reflexivity.
+  - (* n = S n*)
+    simpl.
+    rewrite -> IHn'.
+    reflexivity.
+Qed.
+
