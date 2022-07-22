@@ -1771,3 +1771,20 @@ Proof.
   } 
 Qed.
 Print add_comm.
+
+Theorem add_assoc : forall n m p : nat,
+  n + (m + p) = (n + m) + p.
+Proof.
+  intros n m p.
+  induction n as [| n' IHn'].
+  - {
+    simpl.
+    reflexivity.
+  }
+  - {
+    simpl.
+    rewrite -> IHn'.
+    reflexivity.
+  }
+Qed.
+Print add_assoc.
