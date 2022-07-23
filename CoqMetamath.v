@@ -1788,3 +1788,16 @@ Proof.
   }
 Qed.
 Print add_assoc.
+
+Theorem plus_O_n : forall n : nat, 0 + n = n.
+Proof.
+  intros n. simpl. reflexivity. Qed.
+
+Theorem plus_id_example : forall n m:nat,
+  n = m ->
+  n + n = m + m.
+Proof.
+  intros n m H.
+  rewrite <- H.
+  reflexivity.
+Qed.
