@@ -1953,3 +1953,60 @@ Proof.
     }
   }
 Qed.
+
+Theorem andb3_exchange :
+  forall b c d, andb (andb b c) d = andb (andb b d) c.
+Proof.
+  intros b c d.
+  destruct b eqn:Eb.
+  - {
+    destruct c eqn:Ec.
+    + {
+      destruct d eqn:Ed. 
+      * {
+        simpl.
+        reflexivity.
+      }
+      * {
+        simpl.
+        reflexivity.
+      }
+    }
+    + {
+      destruct d eqn:Ed. 
+      * {
+        simpl.
+        reflexivity.
+      }
+      * {
+        simpl.
+        reflexivity.
+      }
+    }
+  }
+  - {
+    destruct c eqn:Ec.
+    + {
+      destruct d eqn:Ed. 
+      * {
+        simpl.
+        reflexivity.
+      }
+      * {
+        simpl.
+        reflexivity.
+      }
+    }
+    + {
+      destruct d eqn:Ed. 
+      * {
+        simpl.
+        reflexivity.
+      }
+      * {
+        simpl.
+        reflexivity.
+      }
+    }
+  }
+Qed.
