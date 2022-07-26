@@ -1801,3 +1801,40 @@ Proof.
   rewrite <- H.
   reflexivity.
 Qed.
+
+(* SOOMER: KK: plus_id_exercise contains multiple hypotheses, and at
+   least one student was confused about this. Maybe we can talk about
+   → being right-associative before it. *)
+Theorem plus_id_exercise : forall n m o : nat,
+   n = m -> m = o -> n + m = m + o.
+Proof.
+  intros m n o H0 H1.
+  rewrite -> H0.
+  rewrite -> H1.
+  reflexivity.
+Qed.
+
+Check mult_n_O.
+Check mult_n_Sm.
+
+Theorem mult_n_0_m_0 : forall p q : nat,
+  (p * 0) + (q * 0) = 0.
+Proof.
+  intros p q.
+  repeat rewrite <- mult_n_O.
+  simpl.
+  reflexivity.
+Qed.
+Print mult_n_0_m_0.
+
+Theorem mult_n_1 : forall p : nat,
+  p * 1 = p.
+Proof.
+  intros p.
+  Check mult_n_Sm.
+  Check mult_n_O.
+  rewrite <- mult_n_Sm.
+  rewrite <- mult_n_O.
+  simpl. 
+  reflexivity.
+Qed.
