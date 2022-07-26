@@ -1910,3 +1910,46 @@ Proof.
     reflexivity.
    }
 Qed.
+
+Theorem negb_involutive : forall b : bool,
+  negb (negb b) = b.
+Proof.
+  intros b. 
+  destruct b eqn:E.
+  - {
+    simpl.
+    reflexivity.
+  }
+  - {
+    simpl.
+    reflexivity.
+  }
+Qed.
+
+Theorem andb_commutative : forall b c, andb b c = andb c b.
+Proof.
+  intros b c.
+  destruct b eqn:Eb.
+  - {
+    destruct c eqn:Ec.
+    + {
+      simpl.
+      reflexivity. 
+    }
+    + {
+      simpl. 
+      reflexivity.
+    }
+  }
+  - {
+    destruct c eqn:Ec.
+    + {
+      simpl.
+      reflexivity.
+    }
+    + {
+      simpl.
+      reflexivity.
+    }
+  }
+Qed.
