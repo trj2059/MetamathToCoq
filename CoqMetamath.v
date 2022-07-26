@@ -1838,3 +1838,75 @@ Proof.
   simpl. 
   reflexivity.
 Qed.
+
+Inductive bool : Type :=
+  | true
+  | false.
+
+Definition negb (b:bool) : bool :=
+    match b with
+    | true => false
+    | false => true
+    end.
+
+Definition andb (b1:bool) (b2:bool) : bool :=
+    match b1 with
+    | true => b2
+    | false => false
+    end.
+  
+Definition orb (b1:bool) (b2:bool) : bool :=
+    match b1 with
+    | true => true
+    | false => b2
+    end.
+
+Notation "x && y" := (andb x y).
+Notation "x || y" := (orb x y).
+
+Fixpoint eqb (n m : nat) : bool :=
+  match n with
+  | O => match m with
+         | O => true
+         | S m' => false
+         end
+  | S n' => match m with
+            | O => false
+            | S m' => eqb n' m'
+            end
+  end.
+
+Fixpoint leb (n m : nat) : bool :=
+    match n with
+    | O => true
+    | S n' =>
+        match m with
+        | O => false
+        | S m' => leb n' m'
+        end
+    end.
+
+Notation "x =? y" := (eqb x y) (at level 70) : nat_scope.
+Notation "x <=? y" := (leb x y) (at level 70) : nat_scope.
+  
+Theorem plus_1_neq_0_firsttry : forall n : nat,
+  (n + 1) =? 0 = false.
+Proof.
+  intros n.
+  simpl. (* does nothing! *)
+Abort.
+
+Theorem plus_1_neq_0 : forall n : nat,
+  (n + 1) =? 0 = false.
+Proof.
+  intros n.
+  destruct n as [| n'] eqn:E.
+   - {
+    simpl.
+    reflexivity.
+   }
+   - {
+    simpl.
+    reflexivity.
+   }
+Qed.
